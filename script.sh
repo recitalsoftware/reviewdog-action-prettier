@@ -44,6 +44,7 @@ else
     reviewdog \
       -efm="%-G[warn] Code style issues found in the above file%.%+" \
       -efm="%-G[warn] Code style issues found in %\d%+ files. %.%+" \
+      -efm="[%tarn] %f" \
       -efm="[%tarn] %f %l %m" \
       -efm="%E[%trror] %f: %m (%l:%c)" \
       -efm="%C[error]%r" \

@@ -52,7 +52,7 @@ else
       -efm="%-G%r" \
       -name="${INPUT_TOOL_NAME}" \
       -reporter="${INPUT_REPORTER}" \
-      -filter-mode="${INPUT_FILTER_MODE}" \
+      -filter-mode="file" \
       -fail-on-error="${INPUT_FAIL_ON_ERROR}" \
       -level="${INPUT_LEVEL}" \
       "${INPUT_REVIEWDOG_FLAGS}"

@@ -1,6 +1,6 @@
 # reviewdog-action-prettier
 
-![Maintained](https://img.shields.io/badge/maintained-yes-brightgreen) 
+![Maintained](https://img.shields.io/badge/maintained-yes-brightgreen)
 [![Tests](https://github.com/EPMatt/reviewdog-action-prettier/actions/workflows/test.yml/badge.svg)](https://github.com/EPMatt/reviewdog-action-prettier/actions/workflows/test.yml)
 [![Code Quality](https://github.com/EPMatt/reviewdog-action-prettier/actions/workflows/reviewdog.yml/badge.svg)](https://github.com/EPMatt/reviewdog-action-prettier/actions/workflows/reviewdog.yml)
 [![Deps auto update](https://github.com/EPMatt/reviewdog-action-prettier/actions/workflows/depup.yml/badge.svg)](https://github.com/EPMatt/reviewdog-action-prettier/actions/workflows/depup.yml)
@@ -13,6 +13,11 @@
 This GitHub Action runs [prettier](https://prettier.io/) with [reviewdog](https://github.com/reviewdog/reviewdog) to improve code checking, formatting and review experience for your codebase. :dog:
 
 The action will first run Prettier, then passing the tool's output to reviewdog for further processing. Depending on the action configuration, reviewdog will then provide a GitHub check either with code annotations or with a Pull Request review.
+
+> [!WARNING]
+> When running a check, prettier does not output line numbers -- only file names. This means that only Reviewdog's file filter mode will work correctly. This action will ignore other filter modes unless the reporter is set to github-pr-preview.
+
+github-pr-preview is the only reporter that will work correctly with the filter modes other than file. This is because it runs prettier --write, which changes files, giving exact line numbers that reviewdog can use to filter.
 
 For full documentation regarding reviewdog, its features and configuration options, please visit the [reviewdog repository](https://github.com/reviewdog/reviewdog).
 
@@ -35,13 +40,14 @@ As an example, see what the action reported for the Sample PR [here](https://git
 If configured with the `github-pr-review` reporter, the action submits a code review including any errors reported by Prettier; moreover, any formatting changes provided by Prettier are attached as code suggestions.
 
 Check out the [Sample PR _Conversation_ tab](https://github.com/EPMatt/reviewdog-action-prettier/pull/6) to see how the action submitted a code review, including both error reports and formatting suggestions.
+
 ## Input
 
 ```yaml
 inputs:
   github_token:
-    description: 'GITHUB_TOKEN'
-    default: '${{ github.token }}'
+    description: "GITHUB_TOKEN"
+    default: "${{ github.token }}"
     required: false
   workdir:
     description: |
@@ -51,42 +57,42 @@ inputs:
       Please note that this is different from the directory
       Prettier will run on, which is defined in the prettier_flags input.
       Default is `.`.
-    default: '.'
+    default: "."
     required: false
   ### Flags for reviewdog ###
   level:
     description: |
       Report level for reviewdog [info,warning,error].
       Default is `error`.
-    default: 'error'
+    default: "error"
     required: false
   reporter:
     description: |
       Reporter of reviewdog command [github-check,github-pr-check,github-pr-review].
       Default is `github-pr-check`.
-    default: 'github-pr-check'
+    default: "github-pr-check"
     required: false
   filter_mode:
     description: |
       Filtering mode for the reviewdog command [added,diff_context,file,nofilter].
-      Default is `added`.
-    default: 'added'
+      Default is `file`. Other modes are only supported with github-pr-review reporter.
+    default: "file"
     required: false
   fail_on_error:
     description: |
       Exit code for reviewdog when errors are found [true,false].
       Default is `false`.
-    default: 'false'
+    default: "false"
     required: false
   reviewdog_flags:
     description: |
       Additional reviewdog flags.
       Default is ``.
-    default: ''
+    default: ""
     required: false
   tool_name:
-    description: 'Tool name to use for reviewdog reporter'
-    default: 'prettier'
+    description: "Tool name to use for reviewdog reporter"
+    default: "prettier"
     required: false
   ### Flags for prettier ###
   prettier_flags:
@@ -96,7 +102,7 @@ inputs:
       which Prettier will run on.
       The path provided here is relative to the workdir path, provided in the workdir input.
       Default is `.`, which makes Prettier run on the path provided in the workdir input.
-    default: '.'
+    default: "."
     required: false
 ```
 
@@ -223,7 +229,6 @@ jobs:
           prettier_flags: *.jsx
 ```
 
-
 ### Why can't I see the results?
 
 Try looking into the `filter_mode` options explained [here](https://github.com/reviewdog/reviewdog#filter-mode). Prettier errors and warnings will sometimes appear in lines or files that weren't modified by the commit the workflow run is associated with, which instead get filtered with the default `added` option.
@@ -232,7 +237,7 @@ Try looking into the `filter_mode` options explained [here](https://github.com/r
 
 The action will automatically install Prettier from a `package.json` in the `workdir` path. However, it will not choose a Prettier version and install it for you if `package.json` is missing in the provided `workdir` or it does not declare Prettier as a dependency.
 
-Different Prettier versions might result in different formatting; indeed, [the official documentation](https://prettier.io/docs/en/install.html#summary) suggests to install an exact version in your project to avoid any formatting changes and issues due to non-identical Prettier versions. Therefore, the action leaves you to decide which version of Prettier should be executed. 
+Different Prettier versions might result in different formatting; indeed, [the official documentation](https://prettier.io/docs/en/install.html#summary) suggests to install an exact version in your project to avoid any formatting changes and issues due to non-identical Prettier versions. Therefore, the action leaves you to decide which version of Prettier should be executed.
 
 The action does not provide a custom input for specifying the Prettier version; instead, you should use a `package.json` file, and add `prettier` as a dependency. Please read the [Prettier installation guide](https://prettier.io/docs/en/install.html) for more.
 
